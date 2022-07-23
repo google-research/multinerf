@@ -38,6 +38,23 @@ pip install -r requirements.txt
 # Manually install rmbrualla's `pycolmap` (don't use pip's! It's different)
 git clone https://github.com/rmbrualla/pycolmap.git ./internal/pycolmap
 ```
+You'll probably also need to update your JAX installation to support GPUs or TPUs.
+
+## Running
+
+Example scripts for training, evaluating, and rendering can be found in
+`scripts/`. You'll need to change the paths to point to wherever the datasets
+are located. [Gin](https://github.com/google/gin-config) configuration files
+for our model and some ablations can be found in `configs/`.
+After evaluating on the test set of each scene in one of the datasets, you can
+use `scripts/generate_tables.ipynb` to produce error metrics across all scenes
+in the same format as was used in tables in the paper.
+
+### OOM errors
+
+You may need to reduce the batch size (`Config.batch_size`) to avoid out of memory
+errors. If you do this, but want to preserve quality, be sure to increase the number
+of training iterations by whatever scale factor you decreased batch size.
 
 ## Citation
 If you use this software package, please cite whichever constituent paper(s)
