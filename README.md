@@ -15,7 +15,6 @@ reproducing Ref-NeRF or Raw NeRF results.
 This implementation is written in [JAX](https://github.com/google/jax), and
 is a fork of [mip-NeRF](https://github.com/google/mipnerf).
 This is research code, and should be treated accordingly.
-Contact [Jon Barron](https://jonbarron.info/) if you encounter any issues.
 
 ## Setup
 
