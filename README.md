@@ -21,7 +21,10 @@ Contact [Jon Barron](https://jonbarron.info/) if you encounter any issues.
 
 ```
 # Clone the repo
-git clone https://github.com/google-research/mipnerf.git; cd multinerf
+git clone https://github.com/google-research/mipnerf.git
+cd multinerf
+
+# Make a conda environment
 conda create --name multinerf python=3.9
 conda activate multinerf
 
