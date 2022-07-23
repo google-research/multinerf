@@ -3,7 +3,7 @@
 *This is not an officially supported Google product.*
 
 This repository contains the code release for three CVPR 2022 papers:
-[Mip-NeRF 360](https://bmild.github.io/rawnerf/index.html),
+[Mip-NeRF 360](https://jonbarron.info/mipnerf360/),
 [Ref-NeRF](https://dorverbin.github.io/refnerf/index.html), and
 [Raw NeRF](https://bmild.github.io/rawnerf/index.html).
 This codebase was written by
