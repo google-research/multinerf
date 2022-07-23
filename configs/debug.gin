@@ -1,0 +1,18 @@
+# A short training schedule with no "warm up", useful for debugging.
+Config.checkpoint_every = 1000
+Config.print_every = 100
+Config.train_render_every = 1000
+Config.lr_delay_mult = 0.1
+Config.lr_delay_steps = 500
+Config.batch_size = 2048
+Config.render_chunk_size = 2048
+Config.lr_init = 5e-4
+Config.lr_final = 5e-6
+Config.factor = 4
+Config.early_exit_steps = 3000
+
+PropMLP.net_depth = 2
+PropMLP.net_width = 64
+
+NerfMLP.net_depth = 4
+NerfMLP.net_width = 128

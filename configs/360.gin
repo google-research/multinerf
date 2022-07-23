@@ -1,0 +1,19 @@
+Config.dataset_loader = 'llff'
+Config.near = 0.2
+Config.far = 1e6
+Config.factor = 4
+
+Model.raydist_fn = @jnp.reciprocal
+Model.opaque_background = True
+
+PropMLP.warp_fn = @coord.contract
+PropMLP.net_depth = 4
+PropMLP.net_width = 256
+PropMLP.disable_density_normals = True
+PropMLP.disable_rgb = True
+
+NerfMLP.warp_fn = @coord.contract
+NerfMLP.net_depth = 8
+NerfMLP.net_width = 1024
+NerfMLP.disable_density_normals = True
+

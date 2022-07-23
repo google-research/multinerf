@@ -1,0 +1,3 @@
+Config.render_path = True
+Config.render_path_frames = 480
+Config.render_video_fps = 60

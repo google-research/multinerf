@@ -1,0 +1,5 @@
+# This config is meant to be run while overriding a 360*.gin config.
+
+Config.dataset_loader = 'tat_nerfpp'
+Config.near = 0.1
+Config.far = 1e6

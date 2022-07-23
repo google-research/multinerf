@@ -1,0 +1,6 @@
+include 'experimental/users/barron/mipnerf360/configs/llff_raw.gin'
+
+Config.factor = 0
+Config.eval_raw_affine_cc = True
+Config.eval_crop_borders = 16
+Config.vis_decimate = 4

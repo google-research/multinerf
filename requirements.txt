@@ -1,0 +1,11 @@
+numpy
+jax
+jaxlib
+flax
+opencv-python
+Pillow
+tensorboard
+tensorflow
+gin-config
+dm_pix
+rawpy

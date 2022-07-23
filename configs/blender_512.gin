@@ -1,0 +1,25 @@
+Config.dataset_loader = 'blender'
+Config.batching = 'single_image'
+Config.near = 2
+Config.far = 6
+Config.eval_render_interval = 5
+Config.data_loss_type = 'mse'
+Config.adam_eps = 1e-8
+
+Model.num_levels = 2
+Model.num_prop_samples = 128
+Model.num_nerf_samples = 32
+
+PropMLP.net_depth = 4
+PropMLP.net_width = 256
+PropMLP.disable_density_normals = True
+PropMLP.disable_rgb = True
+
+NerfMLP.net_depth = 8
+NerfMLP.net_width = 512
+NerfMLP.disable_density_normals = True
+
+Config.distortion_loss_mult = 0.
+
+NerfMLP.max_deg_point = 16
+PropMLP.max_deg_point = 16

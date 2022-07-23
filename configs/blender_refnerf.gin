@@ -1,0 +1,44 @@
+Config.dataset_loader = 'blender'
+Config.batching = 'single_image'
+Config.near = 2
+Config.far = 6
+Config.eval_render_interval = 5
+Config.compute_normal_metrics = True
+Config.data_loss_type = 'mse'
+Config.distortion_loss_mult = 0.0
+Config.orientation_loss_mult = 0.1
+Config.orientation_loss_target = 'normals_pred'
+Config.predicted_normal_loss_mult = 3e-4
+Config.orientation_coarse_loss_mult = 0.01
+Config.predicted_normal_coarse_loss_mult = 3e-5
+Config.interlevel_loss_mult = 0.0
+Config.data_coarse_loss_mult = 0.1
+Config.adam_eps = 1e-8
+
+Model.num_levels = 2
+Model.single_mlp = True
+Model.num_prop_samples = 128  # This needs to be set despite single_mlp = True.
+Model.num_nerf_samples = 128
+Model.anneal_slope = 0.
+Model.dilation_multiplier = 0.
+Model.dilation_bias = 0.
+Model.single_jitter = False
+Model.resample_padding = 0.01
+
+NerfMLP.net_depth = 8
+NerfMLP.net_width = 256
+NerfMLP.net_depth_viewdirs = 8
+NerfMLP.basis_shape = 'octahedron'
+NerfMLP.basis_subdivisions = 1
+NerfMLP.disable_density_normals = False
+NerfMLP.enable_pred_normals = True
+NerfMLP.use_directional_enc = True
+NerfMLP.use_reflections = True
+NerfMLP.deg_view = 5
+NerfMLP.enable_pred_roughness = True
+NerfMLP.use_diffuse_color = True
+NerfMLP.use_specular_tint = True
+NerfMLP.use_n_dot_v = True
+NerfMLP.bottleneck_width = 128
+NerfMLP.density_bias = 0.5
+NerfMLP.max_deg_point = 16

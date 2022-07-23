@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Path to a directory `base/` with images in `base/images/`.
+DATASET_PATH=$1
+# Recommended CAMERA values: OPENCV for perspective, OPENCV_FISHEYE for fisheye.
+CAMERA=$2
+# Replace this with your own local copy of the file.
+# Download from: https://demuc.de/colmap/#download
+VOCABTREE_PATH=/usr/local/google/home/bmild/vocab_tree_flickr100K_words32K.bin
+
+# Run COLMAP.
+
+colmap feature_extractor \
+    --database_path "$DATASET_PATH"/database.db \
+    --image_path "$DATASET_PATH"/images \
+    --ImageReader.single_camera 1 \
+    --ImageReader.camera_model "$CAMERA" \
+    --SiftExtraction.use_gpu 0
+
+
+colmap vocab_tree_matcher \
+    --database_path "$DATASET_PATH"/database.db \
+    --VocabTreeMatching.vocab_tree_path $VOCABTREE_PATH \
+    --SiftMatching.use_gpu 0
+
+mkdir -p "$DATASET_PATH"/sparse
+
+colmap mapper \
+    --database_path "$DATASET_PATH"/database.db \
+    --image_path "$DATASET_PATH"/images \
+    --output_path "$DATASET_PATH"/sparse
+
+mkdir -p "$DATASET_PATH"/dense
+
+colmap image_undistorter \
+    --image_path "$DATASET_PATH"/images \
+    --input_path "$DATASET_PATH"/sparse/0 \
+    --output_path "$DATASET_PATH"/dense \
+    --output_type COLMAP
+
+# Resize images.
+
+cp -r "$DATASET_PATH"/images "$DATASET_PATH"/images_2
+
+pushd "$DATASET_PATH"/images_2
+ls | xargs -P 8 -I {} mogrify -resize 50% {}
+popd
+
+cp -r "$DATASET_PATH"/images "$DATASET_PATH"/images_4
+
+pushd "$DATASET_PATH"/images_4
+ls | xargs -P 8 -I {} mogrify -resize 25% {}
+popd
+
+cp -r "$DATASET_PATH"/images "$DATASET_PATH"/images_8
+
+pushd "$DATASET_PATH"/images_8
+ls | xargs -P 8 -I {} mogrify -resize 12.5% {}
+popd

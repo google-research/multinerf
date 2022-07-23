@@ -1,0 +1,82 @@
+# General LLFF settings
+
+Config.dataset_loader = 'llff'
+Config.near = 0.
+Config.far = 1.
+Config.factor = 4
+Config.forward_facing = True
+
+Model.ray_shape = 'cylinder'
+
+PropMLP.net_depth = 4
+PropMLP.net_width = 256
+PropMLP.basis_shape = 'octahedron'
+PropMLP.basis_subdivisions = 1
+PropMLP.disable_density_normals = True  # Turn this off if using orientation loss.
+PropMLP.disable_rgb = True
+
+NerfMLP.net_depth = 8
+NerfMLP.net_width = 256
+NerfMLP.basis_shape = 'octahedron'
+NerfMLP.basis_subdivisions = 1
+NerfMLP.disable_density_normals = True  # Turn this off if using orientation loss.
+
+NerfMLP.max_deg_point = 16
+PropMLP.max_deg_point = 16
+
+Config.train_render_every = 5000
+
+
+########################## RawNeRF specific settings ##########################
+
+Config.rawnerf_mode = True
+Config.data_loss_type = 'rawnerf'
+Config.apply_bayer_mask = True
+Model.learned_exposure_scaling = True
+
+Model.num_levels = 2
+Model.num_prop_samples = 128  # Using extra samples for now because of noise instability.
+Model.num_nerf_samples = 128
+Model.opaque_background = True
+
+# RGB activation we use for linear color outputs is exp(x - 5).
+NerfMLP.rgb_padding = 0.
+NerfMLP.rgb_activation = @math.safe_exp
+NerfMLP.rgb_bias = -5.
+PropMLP.rgb_padding = 0.
+PropMLP.rgb_activation = @math.safe_exp
+PropMLP.rgb_bias = -5.
+
+## Experimenting with the various regularizers and losses:
+Config.interlevel_loss_mult = .0  # Turning off interlevel for now (default = 1.).
+Config.distortion_loss_mult = .01  # Distortion loss helps with floaters (default = .01).
+Config.orientation_loss_mult = 0.  # Orientation loss also not great (try .01).
+Config.data_coarse_loss_mult = 0.1  # Setting this to match old MipNeRF.
+
+## Density noise used in original NeRF:
+NerfMLP.density_noise = 1.
+PropMLP.density_noise = 1.
+
+## Use a single MLP for all rounds of sampling:
+Model.single_mlp = True
+
+## Some algorithmic settings to match the paper:
+Model.anneal_slope = 0.
+Model.dilation_multiplier = 0.
+Model.dilation_bias = 0.
+Model.single_jitter = False
+NerfMLP.weight_init = 'glorot_uniform'
+PropMLP.weight_init = 'glorot_uniform'
+
+## Training hyperparameters used in the paper:
+Config.batch_size = 16384
+Config.render_chunk_size = 16384
+Config.lr_init = 1e-3
+Config.lr_final = 1e-5
+Config.max_steps = 500000
+Config.checkpoint_every = 25000
+Config.lr_delay_steps = 2500
+Config.lr_delay_mult = 0.01
+Config.grad_max_norm = 0.1
+Config.grad_max_val = 0.1
+Config.adam_eps = 1e-8
