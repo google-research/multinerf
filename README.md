@@ -20,23 +20,26 @@ Contact [Jon Barron](https://jonbarron.info/) if you encounter any issues.
 ## Setup
 
 ```
-# Clone the repo
+# Clone the repo.
 git clone https://github.com/google-research/multinerf.git
 cd multinerf
 
-# Make a conda environment
+# Make a conda environment.
 conda create --name multinerf python=3.9
 conda activate multinerf
 
-# Prepare pip
+# Prepare pip.
 conda install pip
 pip install --upgrade pip
 
-# Install requirements
+# Install requirements.
 pip install -r requirements.txt
 
-# Manually install rmbrualla's `pycolmap` (don't use pip's! It's different)
+# Manually install rmbrualla's `pycolmap` (don't use pip's! It's different).
 git clone https://github.com/rmbrualla/pycolmap.git ./internal/pycolmap
+
+# Confirm that all the unit tests pass.
+./scripts/run_all_unit_tests.sh
 ```
 You'll probably also need to update your JAX installation to support GPUs or TPUs.
 
