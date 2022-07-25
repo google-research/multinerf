@@ -9,4 +9,3 @@ tensorflow
 gin-config
 dm_pix
 rawpy
-oyrx
