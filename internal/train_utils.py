@@ -111,9 +111,6 @@ def compute_data_loss(batch, renderings, rays, config):
       stats['disparity_mses'].append(((disp - batch.disps)**2).mean())
 
     if config.compute_normal_metrics:
-      # TODO(barron): Report MAEs for all rendering['normals*'], and only do
-      # this for the last scale (then try deleting proposal normals for a
-      # speedup).
       if 'normals' in rendering:
         weights = rendering['acc'] * batch.alphas
         normalized_normals_gt = ref_utils.l2_normalize(batch.normals)
