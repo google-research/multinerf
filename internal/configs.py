@@ -175,7 +175,6 @@ def define_common_flags():
 
 def load_config(save_config=True):
   """Load the config, and optionally checkpoint it."""
-  # TODO(barron): Find a way to set skip_unknown to False while using GINXM.
   gin.parse_config_files_and_bindings(
       flags.FLAGS.gin_configs, flags.FLAGS.gin_bindings, skip_unknown=True)
   config = Config()
