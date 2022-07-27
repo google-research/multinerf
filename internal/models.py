@@ -104,7 +104,6 @@ class Model(nn.Module):
         glo_vecs = nn.Embed(self.num_glo_embeddings, self.num_glo_features)
         cam_idx = rays.cam_idx[..., 0]
         glo_vec = glo_vecs(cam_idx)
-        # TODO(bmild): Test that num_glo_embeddings is large enough.
       else:
         glo_vec = jnp.zeros(rays.origins.shape[:-1] + (self.num_glo_features,))
     else:
@@ -112,7 +111,6 @@ class Model(nn.Module):
 
     if self.learned_exposure_scaling:
       # Setup learned scaling factors for output colors.
-      # TODO(bmild): fix use of `num_glo_embeddings` here.
       max_num_exposures = self.num_glo_embeddings
       # Initialize the learned scaling offsets at 0.
       init_fn = jax.nn.initializers.zeros
