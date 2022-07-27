@@ -333,7 +333,6 @@ def interpolate_1d(x: np.ndarray,
                    spline_degree: int,
                    smoothness: float) -> np.ndarray:
   """Interpolate 1d signal x (by a factor of n_interp times)."""
-  # TODO(bmild): switch interpolation t values to match those chosen for path.
   t = np.linspace(0, 1, len(x), endpoint=True)
   tck = scipy.interpolate.splrep(t, x, s=smoothness, k=spline_degree)
   n = n_interp * (len(x) - 1)
@@ -348,8 +347,6 @@ def create_render_spline_path(
     exposures: Optional[np.ndarray],
 ) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
   """Creates spline interpolation render path from subset of dataset poses.
-
-  TODO(bmild): move relevant config flags to gin kwargs for this function?
 
   Args:
     config: configs.Config object.
