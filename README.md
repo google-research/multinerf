@@ -56,7 +56,8 @@ in the same format as was used in tables in the paper.
 
 You may need to reduce the batch size (`Config.batch_size`) to avoid out of memory
 errors. If you do this, but want to preserve quality, be sure to increase the number
-of training iterations by whatever scale factor you decreased batch size.
+of training iterations and decrease the learning rate by whatever scale factor you
+decrease batch size by.
 
 ## Citation
 If you use this software package, please cite whichever constituent paper(s)
