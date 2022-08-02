@@ -1,4 +1,4 @@
-# MultiNeRF: A Code Release for Mip-NeRF 360, Ref-NeRF, and RawNeRF.
+# MultiNeRF: A Code Release for Mip-NeRF 360, Ref-NeRF, and RawNeRF
 
 *This is not an officially supported Google product.*
 
