@@ -81,7 +81,7 @@ If you already have poses for your own data, you may prefer to write your own cu
 
 MultiNeRF includes a variety of dataloaders, all of which inherit from the
 base
-[Dataset class]().
+[Dataset class](https://github.com/google-research/multinerf/blob/main/internal/datasets.py#L152).
 
 The job of this class is to load all image and pose information from disk, then
 create batches of ray and color data for training or rendering a NeRF model.
@@ -97,15 +97,15 @@ model. The ray parameters are calculated in `_make_ray_batch`.
 To work from an example, you can see how this function is overloaded for the
 different dataloaders we have already implemented:
 
--   [Blender]()
--   [DTU dataset]()
--   [Tanks and Temples](),
+-   [Blender](https://github.com/google-research/multinerf/blob/main/internal/datasets.py#L470)
+-   [DTU dataset](https://github.com/google-research/multinerf/blob/main/internal/datasets.py#L793)
+-   [Tanks and Temples](https://github.com/google-research/multinerf/blob/main/internal/datasets.py#L680),
     as processed by the NeRF++ paper
--   [Tanks and Temples](),
+-   [Tanks and Temples](https://github.com/google-research/multinerf/blob/main/internal/datasets.py#L728),
     as processed by the Free View Synthesis paper
 
 The main data loader we rely on is
-[LLFF]()
+[LLFF](https://github.com/google-research/multinerf/blob/main/internal/datasets.py#L526)
 (named for historical reasons), which is the loader for a dataset that has been
 posed by COLMAP.
 
@@ -128,7 +128,7 @@ In this function, you **must** set the following public attributes:
 -   height, width
 
 Many of our dataset loaders also set other useful attributes, but these are the
-critical ones for generating rays.
+critical ones for generating rays. You can see how they are used (along with a batch of pixel coordinates) to create rays in [`camera_utils.pixels_to_rays`](https://github.com/google-research/multinerf/blob/main/internal/camera_utils.py#L520).
 
 **Images**
 
@@ -157,7 +157,7 @@ The most common conventions are
 -   `[right, down, forwards]`: OpenCV, COLMAP, most computer vision code.
 
 Fortunately switching from OpenCV/COLMAP to NeRF is
-[simple]():
+[simple](https://github.com/google-research/multinerf/blob/main/internal/datasets.py#L108):
 you just need to right-multiply the OpenCV pose matrices by `np.diag([1, -1, -1, 1])`,
 which will flip the sign of the y-axis (from down to up) and z-axis (from
 forwards to backwards):
@@ -169,7 +169,7 @@ You may also want to **scale** your camera pose translations such that they all
 lie within the `[-1, 1]^3` cube for best performance with the default mipnerf360
 config files.
 
-We provide a useful helper function `camera_utils.transform_poses_pca` that computes a translation/rotation/scaling transform for the input poses that aligns the world space x-y plane with the ground (based on PCA) and scales the scene so that all input pose positions lie within `[-1, 1]^3`. (This function is applied by default when loading mip-NeRF 360 scenes with the LLFF data loader.) For a scene where this transformation has been applied, `camera_utils.generate_ellipse_path` can be used to generate a nice elliptical camera path for rendering videos.
+We provide a useful helper function [`camera_utils.transform_poses_pca`](https://github.com/google-research/multinerf/blob/main/internal/camera_utils.py#L191) that computes a translation/rotation/scaling transform for the input poses that aligns the world space x-y plane with the ground (based on PCA) and scales the scene so that all input pose positions lie within `[-1, 1]^3`. (This function is applied by default when loading mip-NeRF 360 scenes with the LLFF data loader.) For a scene where this transformation has been applied, [`camera_utils.generate_ellipse_path`](https://github.com/google-research/multinerf/blob/main/internal/camera_utils.py#L230) can be used to generate a nice elliptical camera path for rendering videos.
 
 **Intrinsic camera poses**
 
@@ -188,10 +188,10 @@ pixtocam = np.linalg.inv(camtopix)
 
 Given a focal length and image size (and assuming a centered principal point,
 this matrix can be created using
-[`camera_utils.get_pixtocam`]().
+[`camera_utils.get_pixtocam`](https://github.com/google-research/multinerf/blob/main/internal/camera_utils.py#L411).
 
 Alternatively, it can be created by using
-[`camera_utils.intrinsic_matrix`]()
+[`camera_utils.intrinsic_matrix`](https://github.com/google-research/multinerf/blob/main/internal/camera_utils.py#L398)
 and inverting the resulting matrix.
 
 **Resolution**
