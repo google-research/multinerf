@@ -1,4 +1,4 @@
-# MultiNeRF: A Code Release for Mip-NeRF 360, Ref-NeRF, and Raw-NeRF.
+# MultiNeRF: A Code Release for Mip-NeRF 360, Ref-NeRF, and Raw NeRF.
 
 *This is not an officially supported Google product.*
 
@@ -64,7 +64,7 @@ you build upon, or feel free to cite this entire codebase as:
 
 ```
 @misc{multinerf2022,
-      title={MultiNeRF: A Code Release for Mip-NeRF 360, Ref-NeRF, and Raw-NeRF},
+      title={MultiNeRF: A Code Release for Mip-NeRF 360, Ref-NeRF, and Raw NeRF},
       author={Ben Mildenhall and Dor Verbin and Pratul P. Srinivasan and Peter Hedman and Ricardo Martin-Brualla and Jonathan T. Barron},
       year={2022},
 }
