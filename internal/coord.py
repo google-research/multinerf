@@ -84,14 +84,14 @@ def construct_ray_warps(fn, t_near, t_far):
     fn_inv = lambda x: jnp.where(x < .5, 2 * x, .5 / (1 - x))
   else:
     inv_mapping = {
-        jnp.reciprocal: jnp.reciprocal,
-        jnp.log: jnp.exp,
-        jnp.exp: jnp.log,
-        jnp.sqrt: jnp.square,
-        jnp.square: jnp.sqrt
+        'reciprocal': jnp.reciprocal,
+        'log': jnp.exp,
+        'exp': jnp.log,
+        'sqrt': jnp.square,
+        'square': jnp.sqrt
     }
     fn_fwd = fn
-    fn_inv = inv_mapping[fn]
+    fn_inv = inv_mapping[fn.__name__]
 
   s_near, s_far = [fn_fwd(x) for x in (t_near, t_far)]
   t_to_s = lambda t: (fn_fwd(t) - s_near) / (s_far - s_near)
