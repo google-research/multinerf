@@ -149,6 +149,43 @@ class NeRFSceneManager(pycolmap.SceneManager):
     return names, poses, pixtocam, params, camtype
 
 
+def load_blender_posedata(data_dir, split=None):
+  """Load poses from `transforms.json` file, as used in Blender/NGP datasets."""
+  suffix = '' if split is None else f'_{split}'
+  pose_file = path.join(data_dir, f'transforms{suffix}.json')
+  with utils.open_file(pose_file, 'r') as fp:
+    meta = json.load(fp)
+  names = []
+  poses = []
+  for _, frame in enumerate(meta['frames']):
+    filepath = os.path.join(data_dir, frame['file_path'])
+    if utils.file_exists(filepath):
+      names.append(frame['file_path'].split('/')[-1])
+      poses.append(np.array(frame['transform_matrix'], dtype=np.float32))
+  poses = np.stack(poses, axis=0)
+
+  w = meta['w']
+  h = meta['h']
+  cx = meta['cx'] if 'cx' in meta else w / 2.
+  cy = meta['cy'] if 'cy' in meta else h / 2.
+  if 'fl_x' in meta:
+    fx = meta['fl_x']
+  else:
+    fx = 0.5 * w / np.tan(0.5 * float(meta['camera_angle_x']))
+  if 'fl_y' in meta:
+    fy = meta['fl_y']
+  else:
+    fy = 0.5 * h / np.tan(0.5 * float(meta['camera_angle_y']))
+  pixtocam = np.linalg.inv(camera_utils.intrinsic_matrix(fx, fy, cx, cy))
+  coeffs = ['k1', 'k2', 'p1', 'p2']
+  if not any([c in meta for c in coeffs]):
+    params = None
+  else:
+    params = {c: (meta[c] if c in meta else 0.) for c in coeffs}
+  camtype = camera_utils.ProjectionType.PERSPECTIVE
+  return names, poses, pixtocam, params, camtype
+
+
 class Dataset(threading.Thread, metaclass=abc.ABCMeta):
   """Dataset Base Class.
 
@@ -540,12 +577,15 @@ class LLFF(Dataset):
       factor = 1
 
     # Copy COLMAP data to local disk for faster loading.
-    remote_colmap_dir = os.path.join(self.data_dir, 'sparse/0/')
+    colmap_dir = os.path.join(self.data_dir, 'sparse/0/')
 
     # Load poses.
-    scenemanager = NeRFSceneManager(remote_colmap_dir)
-    colmap_data = scenemanager.process()
-    image_names, poses, pixtocam, distortion_params, camtype = colmap_data
+    if utils.file_exists(colmap_dir):
+      pose_data = NeRFSceneManager(colmap_dir).process()
+    else:
+      # Attempt to load Blender/NGP format if COLMAP data not present.
+      pose_data = load_blender_posedata(self.data_dir)
+    image_names, poses, pixtocam, distortion_params, camtype = pose_data
 
     # Previous NeRF results were generated with images sorted by filename,
     # use this flag to ensure metrics are reported on the same test set.
