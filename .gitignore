@@ -1,0 +1,8 @@
+internal/pycolmap
+__pycache__/
+interal/__pycache__/
+tests/__pycache__/
+.DS_Store
+.vscode/
+.idea/
+__MACOSX/
