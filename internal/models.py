@@ -378,10 +378,6 @@ class MLP(nn.Module):
   basis_shape: str = 'icosahedron'  # `octahedron` or `icosahedron`.
   basis_subdivisions: int = 2  # Tesselation count. 'octahedron' + 1 == eye(3).
 
-  def get_hash_encoding(self):
-    """Override this function to return NerfHashEncoding/PropHashEncoding."""
-    return grid_utils.HashEncoding()
-
   def setup(self):
     # Make sure that normals are computed if reflection direction is used.
     if self.use_reflections and not (self.enable_pred_normals or
