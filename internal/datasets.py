@@ -734,7 +734,7 @@ class TanksAndTemplesNerfPP(Dataset):
           os.path.join(basedir, dirname, f)
           for f in sorted(utils.listdir(os.path.join(basedir, dirname)))
       ]
-      mats = np.array([load_fn(utils.open_file(f)) for f in files])
+      mats = np.array([load_fn(utils.open_file(f, 'rb')) for f in files])
       if shape is not None:
         mats = mats.reshape(mats.shape[:1] + shape)
       return mats
@@ -780,7 +780,7 @@ class TanksAndTemplesFVS(Dataset):
       raise ValueError(f'Factor {config.factor} larger than {len(sizes)}')
 
     basedir = os.path.join(basedir, sizes[config.factor])
-    open_fn = lambda f: utils.open_file(os.path.join(basedir, f))
+    open_fn = lambda f: utils.open_file(os.path.join(basedir, f), 'rb')
 
     files = [f for f in sorted(utils.listdir(basedir)) if f.startswith('im_')]
     if render_only:
