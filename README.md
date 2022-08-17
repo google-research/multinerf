@@ -7,7 +7,7 @@ This repository contains the code release for three CVPR 2022 papers:
 [Ref-NeRF](https://dorverbin.github.io/refnerf/), and
 [RawNeRF](https://bmild.github.io/rawnerf/).
 This codebase was written by
-integrating our internal implementions of Ref-NeRF and RawNeRF into our
+integrating our internal implementations of Ref-NeRF and RawNeRF into our
 mip-NeRF 360 implementation. As such, this codebase should exactly
 reproduce the results shown in mip-NeRF 360, but may differ slightly when
 reproducing Ref-NeRF or RawNeRF results.
