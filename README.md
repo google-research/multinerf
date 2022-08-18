@@ -61,6 +61,37 @@ decrease batch size by.
 
 ## Using your own data
 
+Summary: first, calculate poses. Second, train MultiNeRF. Third, render a result video from the trained NeRF model.
+
+1. Calculating poses (using COLMAP):
+```
+DATA_DIR=my_dataset_dir
+bash scripts/local_colmap_and_resize.sh ${DATA_DIR}
+```
+2. Training MultiNeRF
+```
+python -m train \
+  --gin_configs=configs/360.gin \
+  --gin_bindings="Config.data_dir = 'my_dataset_dir'" \
+  --gin_bindings="Config.checkpoint_dir = '${DATA_DIR}/checkpoints'" \
+  --logtostderr
+```
+3. Rendering MultiNeRF
+```
+python -m render \
+  --gin_configs=configs/360.gin \
+  --gin_bindings="Config.data_dir = '${DATA_DIR}'" \
+  --gin_bindings="Config.checkpoint_dir = '${DATA_DIR}/checkpoints'" \
+  --gin_bindings="Config.render_dir = '${DATA_DIR}/render'" \
+  --gin_bindings="Config.render_path = True" \
+  --gin_bindings="Config.render_path_frames = 480" \
+  --gin_bindings="Config.render_video_fps = 60" \
+  --logtostderr
+```
+Your output video should now exist in the directory `my_dataset_dir/render/`.
+
+See below for more detailed instructions on either using COLMAP to calculate poses or writing your own dataset loader (if you already have pose data from another source, like SLAM or RealityCapture).
+
 ### Running COLMAP to get camera poses
 
 In order to run MultiNeRF on your own captured images of a scene, you must first run [COLMAP](https://colmap.github.io/install.html) to calculate camera poses. You can do this using our provided script `scripts/local_colmap_and_resize.sh`. Just make a directory `my_dataset_dir/` and copy your input images into a folder `my_dataset_dir/images/`, then run:
