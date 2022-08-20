@@ -68,15 +68,15 @@ Summary: first, calculate poses. Second, train MultiNeRF. Third, render a result
 DATA_DIR=my_dataset_dir
 bash scripts/local_colmap_and_resize.sh ${DATA_DIR}
 ```
-2. Training MultiNeRF
+2. Training MultiNeRF:
 ```
 python -m train \
   --gin_configs=configs/360.gin \
-  --gin_bindings="Config.data_dir = 'my_dataset_dir'" \
+  --gin_bindings="Config.data_dir = '${DATA_DIR}'" \
   --gin_bindings="Config.checkpoint_dir = '${DATA_DIR}/checkpoints'" \
   --logtostderr
 ```
-3. Rendering MultiNeRF
+3. Rendering MultiNeRF:
 ```
 python -m render \
   --gin_configs=configs/360.gin \
