@@ -50,7 +50,7 @@ class GeopolyTest(absltest.TestCase):
       for j in range(num_points):
         sq_dist_ref[i, j] = np.sum((mat0[:, i] - mat1[:, j])**2)
 
-    np.testing.assert_allclose(sq_dist, sq_dist_ref, atol=1e-5, rtol=1e-5)
+    np.testing.assert_allclose(sq_dist, sq_dist_ref, atol=1e-4, rtol=1e-4)
 
   def test_compute_sq_dist_single_input(self):
     """Test that compute_sq_dist with a single input works correctly."""

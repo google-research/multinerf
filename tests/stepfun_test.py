@@ -548,8 +548,8 @@ class StepFunTest(parameterized.TestCase):
     t = jnp.array([-2.5, -1.5, -0.5, 0.5, 1.5, 2.5])
     logits = jnp.array([0, 0, 100., 0, 0])
 
-    ts = t[None].tile([n, 1])
-    logits = logits[None].tile([n, 1])
+    ts = jnp.tile(t[None], [n, 1])
+    logits = jnp.tile(logits[None], [n, 1])
 
     # Resample the step functions.
     rng = random.PRNGKey(0) if randomized else None

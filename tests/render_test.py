@@ -402,8 +402,8 @@ class RenderTest(parameterized.TestCase):
       gt_rot_mean, gt_rot_cov = surface_stats(
           rot_mat @ control_points(mean, cov))
 
-      np.testing.assert_allclose(rot_mean, gt_rot_mean, atol=1E-5, rtol=1E-5)
-      np.testing.assert_allclose(rot_cov, gt_rot_cov, atol=1E-5, rtol=1E-5)
+      np.testing.assert_allclose(rot_mean, gt_rot_mean, atol=1E-4, rtol=1E-4)
+      np.testing.assert_allclose(rot_cov, gt_rot_cov, atol=1E-4, rtol=1E-4)
 
   @parameterized.named_parameters(
       ('-100 -100', -100, -100),
