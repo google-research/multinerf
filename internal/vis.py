@@ -146,8 +146,8 @@ def visualize_rays(dist,
     rep = resolution // (vis_rgb.shape[0] * vis_rgb.shape[1] + 1)
     stride = rep * vis_rgb.shape[1]
 
-    vis_rgb = vis_rgb.tile((1, 1, rep, 1)).reshape((-1,) + vis_rgb.shape[2:])
-    vis_alpha = vis_alpha.tile((1, 1, rep)).reshape((-1,) + vis_alpha.shape[2:])
+    vis_rgb = jnp.tile(vis_rgb, (1, 1, rep, 1)).reshape((-1,) + vis_rgb.shape[2:])
+    vis_alpha = jnp.tile(vis_alpha, (1, 1, rep)).reshape((-1,) + vis_alpha.shape[2:])
 
     # Add a strip of background pixels after each set of levels of rays.
     vis_rgb = vis_rgb.reshape((-1, stride) + vis_rgb.shape[1:])
