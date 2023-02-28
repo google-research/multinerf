@@ -1,4 +1,4 @@
-numpy
+numpy>=1.22, <1.24 
 jax
 jaxlib
 flax
