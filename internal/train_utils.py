@@ -27,6 +27,7 @@ from internal import image
 from internal import math
 from internal import models
 from internal import ref_utils
+from internal import robustnerf 
 from internal import stepfun
 from internal import utils
 import jax
@@ -68,7 +69,7 @@ def summarize_tree(tree, fn, ancestry=(), max_depth=3):
   return stats
 
 
-def compute_data_loss(batch, renderings, rays, config):
+def compute_data_loss(batch, renderings, rays, loss_threshold, config):
   """Computes data loss terms for RGB, normal, and depth outputs."""
   data_losses = []
   stats = collections.defaultdict(lambda: [])
@@ -100,6 +101,11 @@ def compute_data_loss(batch, renderings, rays, config):
       scaling_grad = 1. / (1e-3 + jax.lax.stop_gradient(rgb_render_clip))
       # Reweighted L2 loss.
       data_loss = resid_sq_clip * scaling_grad**2
+    elif config.data_loss_type == 'robustnerf':
+        mask, robust_stats = robustnerf.robustnerf_mask(resid_sq, loss_threshold, 
+                config)
+        data_loss = data_loss * mask
+        stats.update(robust_stats)
     else:
       assert False
     data_losses.append((lossmult * data_loss).sum() / denom)
@@ -236,6 +242,7 @@ def create_train_step(model: models.Model,
       batch,
       cameras,
       train_frac,
+      loss_threshold,
   ):
     """One optimization step.
 
@@ -245,6 +252,7 @@ def create_train_step(model: models.Model,
       batch: dict, a mini-batch of data for training.
       cameras: module containing camera poses.
       train_frac: float, the fraction of training that is complete.
+      loss_threshold: float, the loss threshold for inliers (for robustness).
 
     Returns:
       A tuple (new_state, stats, rng) with
@@ -273,7 +281,8 @@ def create_train_step(model: models.Model,
 
       losses = {}
 
-      data_loss, stats = compute_data_loss(batch, renderings, rays, config)
+      data_loss, stats = compute_data_loss(batch, renderings, rays,
+              loss_threshold, config)
       losses['data'] = data_loss
 
       if config.interlevel_loss_mult > 0:
@@ -332,7 +341,7 @@ def create_train_step(model: models.Model,
   train_pstep = jax.pmap(
       train_step,
       axis_name='batch',
-      in_axes=(0, 0, 0, None, None),
+      in_axes=(0, 0, 0, None, None, None),
       donate_argnums=(0, 1))
   return train_pstep
 
@@ -394,7 +403,8 @@ def setup_model(
 ) -> Tuple[models.Model, TrainState, Callable[
     [FrozenVariableDict, jnp.array, utils.Rays],
     MutableMapping[Text, Any]], Callable[
-        [jnp.array, TrainState, utils.Batch, Optional[Tuple[Any, ...]], float],
+        [jnp.array, TrainState, utils.Batch,
+            Optional[Tuple[Any, ...]], float, float],
         Tuple[TrainState, Dict[Text, Any], jnp.array]], Callable[[int], float]]:
   """Creates NeRF model, optimizer, and pmap-ed train/render functions."""
 
