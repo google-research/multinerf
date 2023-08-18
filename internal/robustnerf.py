@@ -6,13 +6,13 @@ import jax.numpy as jnp
 
 
 def robustnerf_mask(
-    errors: jnp.ndarray, inlier_threshold: float, config: {str: float}
+    errors: jnp.ndarray, loss_threshold: float, config: {str: float}
 ) -> Tuple[jnp.ndarray, Mapping[str, jnp.ndarray]]:
   """Computes RobustNeRF mask.
 
   Args:
     errors: f32[n,h,w,c]. Per-subpixel errors in a batch of patches.
-    inlier_threshold: f32[]. Upper bound on per-pixel loss to use to determine
+    loss_threshold: f32[]. Upper bound on per-pixel loss to use to determine
       if a pixel is an inlier or not.
     config: Config object. A dictionary of hyperparameters.
 
@@ -23,12 +23,12 @@ def robustnerf_mask(
   epsilon = 1e-3
   error_dtype = errors.dtype
   error_per_pixel = jnp.mean(errors, axis=-1, keepdims=True)  # f32[n,h,w,1]
-  next_inlier_threshold = jnp.quantile(
+  next_loss_threshold = jnp.quantile(
       error_per_pixel, config.robustnerf_inlier_quantile
   )
   mask = jnp.ones_like(error_per_pixel, dtype=error_dtype)
   stats = {
-      'inlier_threshold': next_inlier_threshold,
+      'loss_threshold': next_loss_threshold,
   }
   if config.enable_robustnerf_loss:
     assert (
@@ -36,7 +36,7 @@ def robustnerf_mask(
     ), 'patch_size must be larger than robustnerf_inner_patch_size.'
 
     # Inlier pixels have a value of 1.0 in the mask.
-    is_inlier_pixel = (error_per_pixel < inlier_threshold).astype(error_dtype)
+    is_inlier_pixel = (error_per_pixel < loss_threshold).astype(error_dtype)
     stats['is_inlier_loss'] = jnp.mean(is_inlier_pixel)
 
     # Apply fxf (3x3) box filter 'window' for smoothing (diffusion).
