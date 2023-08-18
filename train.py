@@ -106,6 +106,7 @@ def main(unused_argv):
     num_steps = config.early_exit_steps
   else:
     num_steps = config.max_steps
+  loss_threshold = 1.0
   for step, batch in zip(range(init_step, num_steps + 1), pdataset):
 
     if reset_stats and (jax.host_id() == 0):
@@ -122,7 +123,9 @@ def main(unused_argv):
         batch,
         cameras,
         train_frac,
+        loss_threshold,
     )
+    loss_threshold = jnp.mean(stats['loss_threshold'])
 
     if step % config.gc_every == 0:
       gc.collect()  # Disable automatic garbage collection for efficiency.
