@@ -92,12 +92,12 @@ class Config:
   orientation_loss_mult: float = 0.0  # Multiplier on the orientation loss.
   orientation_coarse_loss_mult: float = 0.0  # Coarser orientation loss weights.
   # RobustNerf loss hyperparameters
-  robustnerf_inlier_quantile = 0.5
-  enable_robutnerf_loss = False
-  robustnerf_inner_patch_size = 8
-  robustnerf_smoothed_filter_size = 3
-  robustnerf_smoothed_inlier_quantile = 0.5
-  robustnerf_inner_patch_inlier_quantile = 0.5
+  robustnerf_inlier_quantile: float = 0.5
+  enable_robustnerf_loss: bool = False
+  robustnerf_inner_patch_size: int = 8
+  robustnerf_smoothed_filter_size: int = 3
+  robustnerf_smoothed_inlier_quantile: float = 0.5
+  robustnerf_inner_patch_inlier_quantile: float = 0.5
   # What that loss is imposed on, options are 'normals' or 'normals_pred'.
   orientation_loss_target: str = 'normals_pred'
   predicted_normal_loss_mult: float = 0.0  # Mult. on the predicted normal loss.

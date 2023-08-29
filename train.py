@@ -125,7 +125,8 @@ def main(unused_argv):
         train_frac,
         loss_threshold,
     )
-    loss_threshold = jnp.mean(stats['loss_threshold'])
+    if config.enable_robustnerf_loss:
+        loss_threshold = jnp.mean(stats['loss_threshold'])
 
     if step % config.gc_every == 0:
       gc.collect()  # Disable automatic garbage collection for efficiency.
