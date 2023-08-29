@@ -34,8 +34,8 @@ pip install --upgrade pip
 # Install requirements.
 pip install -r requirements.txt
 
-# Manually install rmbrualla's `pycolmap` (don't use pip's! It's different).
-git clone https://github.com/rmbrualla/pycolmap.git ./internal/pycolmap
+# Manually install trueprice's `pycolmap` (don't use pip's! It's different).
+git clone https://github.com/trueprice/pycolmap.git ./internal/pycolmap
 
 # Confirm that all the unit tests pass.
 ./scripts/run_all_unit_tests.sh
