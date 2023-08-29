@@ -104,7 +104,7 @@ def compute_data_loss(batch, renderings, rays, loss_threshold, config):
     elif config.data_loss_type == 'robustnerf':
         mask, robust_stats = robustnerf.robustnerf_mask(resid_sq, loss_threshold, 
                 config)
-        data_loss = data_loss * mask
+        data_loss = resid_sq * mask
         stats.update(robust_stats)
     else:
       assert False
