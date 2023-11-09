@@ -573,25 +573,51 @@ def pixels_to_rays(
   # Apply inverse intrinsic matrices.
   camera_dirs_stacked = mat_vec_mul(pixtocams, pixel_dirs_stacked)
 
-  if distortion_params is not None:
+  mask = camtype > 0
+  if xnp.any(mask):
+    is_uniform = xnp.all(mask)
+    if is_uniform:
+      ldistortion_params = distortion_params
+      dl = camera_dirs_stacked
+    else:
+      ldistortion_params = distortion_params[mask, :]
+      dl = camera_dirs_stacked[:, mask, :]
+
     # Correct for distortion.
+    dist_dict = dict(zip(
+        ["k1", "k2", "k3", "k4", "p1", "p2"],
+        xnp.moveaxis(ldistortion_params, -1, 0)))
     x, y = _radial_and_tangential_undistort(
-        camera_dirs_stacked[..., 0],
-        camera_dirs_stacked[..., 1],
-        **distortion_params,
-        xnp=xnp)
-    camera_dirs_stacked = xnp.stack([x, y, xnp.ones_like(x)], -1)
+      dl[..., 0],
+      dl[..., 1],
+      **dist_dict,
+      xnp=xnp)
+    dl = xnp.stack([x, y, xnp.ones_like(x)], -1)
+    dcamera_types = camtype[mask]
 
-  if camtype == ProjectionType.FISHEYE:
-    theta = xnp.sqrt(xnp.sum(xnp.square(camera_dirs_stacked[..., :2]), axis=-1))
-    theta = xnp.minimum(xnp.pi, theta)
+    fisheye_mask = dcamera_types == 2
+    if fisheye_mask.any():
+      is_all_fisheye = xnp.all(fisheye_mask)
+      if is_all_fisheye:
+        dll = dl
+      else:
+        dll = dl[:, mask, :2]
+      theta = xnp.sqrt(xnp.sum(xnp.square(dll[..., :2]), axis=-1))
+      theta = xnp.minimum(xnp.pi, theta)
+      sin_theta_over_theta = xnp.sin(theta) / theta
 
-    sin_theta_over_theta = xnp.sin(theta) / theta
-    camera_dirs_stacked = xnp.stack([
-        camera_dirs_stacked[..., 0] * sin_theta_over_theta,
-        camera_dirs_stacked[..., 1] * sin_theta_over_theta,
-        xnp.cos(theta),
-    ], axis=-1)
+      if is_all_fisheye:
+        dl[..., :2] *= sin_theta_over_theta
+        dl[..., 2:] *= xnp.cos(theta)
+      else:
+        dl[:, mask, :2] *= sin_theta_over_theta
+        dl[:, mask, 2:] *= xnp.cos(theta)
+
+  if mask.any():
+    if is_uniform:
+      camera_dirs_stacked = dl
+    else:
+      camera_dirs_stacked[:, mask, :] = dl
 
   # Flip from OpenCV to OpenGL coordinate system.
   camera_dirs_stacked = matmul(camera_dirs_stacked,
@@ -655,11 +681,20 @@ def cast_ray_batch(
   Returns:
     rays: Rays dataclass with computed 3D world space ray data.
   """
-  pixtocams, camtoworlds, distortion_params, pixtocam_ndc = cameras
+  del camtype
+  pixtocams, camtoworlds, distortion_params, pixtocam_ndc, camtype = cameras
 
   # pixels.cam_idx has shape [..., 1], remove this hanging dimension.
   cam_idx = pixels.cam_idx[..., 0]
   batch_index = lambda arr: arr if arr.ndim == 2 else arr[cam_idx]
+
+  bs = pixels.pix_x_int.shape
+  dtype = pixtocams.dtype
+  origins = xnp.zeros((*bs, 3), dtype=dtype)
+  directions = xnp.zeros((*bs, 3), dtype=dtype)
+  viewdirs = xnp.zeros((*bs, 3), dtype=dtype)
+  radii = xnp.zeros((*bs, 1), dtype=dtype)
+  imageplane = xnp.zeros((*bs, 1), dtype=dtype)
 
   # Compute rays from pixel coordinates.
   origins, directions, viewdirs, radii, imageplane = pixels_to_rays(
@@ -667,9 +702,9 @@ def cast_ray_batch(
       pixels.pix_y_int,
       batch_index(pixtocams),
       batch_index(camtoworlds),
-      distortion_params=distortion_params,
-      pixtocam_ndc=pixtocam_ndc,
-      camtype=camtype,
+      distortion_params=distortion_params[cam_idx],
+      pixtocam_ndc=pixtocam_ndc[cam_idx] if pixtocam_ndc is not None else None,
+      camtype=camtype[cam_idx],
       xnp=xnp)
 
   # Create Rays data structure.
