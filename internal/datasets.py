@@ -329,7 +329,11 @@ class Dataset(threading.Thread, metaclass=abc.ABCMeta):
     if len(self.pixtocams.shape) == 2:
       self.pixtocams = np.repeat(self.pixtocams[None], self._n_examples, 0)
     if not isinstance(self.focal, np.ndarray):
-      self.focal = np.full((self._n_examples,), self.focal, dtype=np.int32)
+      self.focal = np.full((self._n_examples,), self.focal, dtype=np.float32)
+    if not isinstance(self.near, np.ndarray):
+      self.near = np.full((self._n_examples,), self.near, dtype=np.float32)
+    if not isinstance(self.height, np.ndarray):
+      self.far = np.full((self._n_examples,), self.far, dtype=np.float32)
     if not isinstance(self.width, np.ndarray):
       self.width = np.full((self._n_examples,), self.width, dtype=np.int32)
     if not isinstance(self.height, np.ndarray):
@@ -450,10 +454,11 @@ class Dataset(threading.Thread, metaclass=abc.ABCMeta):
     """
 
     broadcast_scalar = lambda x: np.broadcast_to(x, pix_x_int.shape)[..., None]
+    idx = 0 if self.render_path else cam_idx
     ray_kwargs = {
         'lossmult': broadcast_scalar(1.) if lossmult is None else lossmult,
-        'near': broadcast_scalar(self.near),
-        'far': broadcast_scalar(self.far),
+        'near': broadcast_scalar(self.near[idx]),
+        'far': broadcast_scalar(self.far[idx]),
         'cam_idx': broadcast_scalar(cam_idx),
     }
     # Collect per-camera information needed for each ray.
@@ -532,7 +537,11 @@ class Dataset(threading.Thread, metaclass=abc.ABCMeta):
     if self._render_spherical:
       camtoworld = self.camtoworlds[cam_idx]
       rays = camera_utils.cast_spherical_rays(
-          camtoworld, self.height[cam_idx], self.width[cam_idx], self.near, self.far, xnp=np)
+          camtoworld,
+          self.height[cam_idx], self.width[cam_idx],
+          self.near[cam_idx],
+          self.far[cam_idx],
+          xnp=np)
       return utils.Batch(rays=rays)
     else:
       # Generate rays for all pixels in the image.

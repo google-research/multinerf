@@ -602,7 +602,7 @@ def pixels_to_rays(
         dll = dl
       else:
         dll = dl[:, mask, :2]
-      theta = xnp.sqrt(xnp.sum(xnp.square(dll[..., :2]), axis=-1))
+      theta = xnp.sqrt(xnp.sum(xnp.square(dll[..., :2]), axis=-1, keepdims=True))
       theta = xnp.minimum(xnp.pi, theta)
       sin_theta_over_theta = xnp.sin(theta) / theta
 
